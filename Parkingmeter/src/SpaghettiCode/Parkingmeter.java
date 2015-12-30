@@ -100,7 +100,7 @@ public class Parkingmeter {
 			else if (parkingSpotNumber == secretKeys[2]) printAllInfo();
 			else if (parkingSpotNumber == secretKeys[3]) testAll();
 			else if (parkingSpotNumber == secretKeys[4]) exit = true;
-			else if (parkingSpotNumber == secretKeys[5]) insertNewCoinsValueController();
+			else if (parkingSpotNumber == secretKeys[5]) coinsParkingMeter=insertNewCoinsValueController();
 			else  {
 				if (parkingSpotNumber > 0 && parkingSpotNumber <=  meterDate.length) {
 					insertCoinsController (parkingSpotNumber);
@@ -142,11 +142,16 @@ public class Parkingmeter {
 	/**
 	 * 
 	 */
-	private static void insertNewCoinsValueController() {
+	private static int[] insertNewCoinsValueController() {
 		// coinsBoxValue
 		// coinsParkingMeter
 		// Ausgabe neuer Inhalt formatCoinContent(coinsParkingMeter);
-		System.out.println("Neuer Münzbestand eingeben");
+		for(int i=0; i<3; i++){
+			System.out.println("Neuen Münzbestand für Fach " + (i+1) + " eingeben");
+			int newCoinValueTemp  = (int)TastaturRead.readLong();
+			coinsParkingMeter[i]=newCoinValueTemp;
+		}
+		return coinsParkingMeter;
 	}
      
     /**
@@ -206,8 +211,11 @@ public class Parkingmeter {
 	}
 	
 	// TODO Fehler beheben: Buchung der Parkgebühr auf die Münzeinheiten
-	private static void bookParkingCoins (int[] parkCoins) {
-		
+	private static int[] bookParkingCoins (int[] parkCoins, int[]coinsParkingmeter) {
+		for (int i=0; i<coinsBoxValue.length; i++){
+			coinsParkingmeter[i]=coinsParkingmeter[i] + parkCoins[i];
+		}
+		return coinsParkingMeter;
 	}
 	
 	/**
@@ -265,7 +273,7 @@ public class Parkingmeter {
 		// Compute Parking Time
 		int minutes = (int)Math.round(computeTimeInMinutes (parkingTimeDef, parkValue));
 		meterDate[parkingSpotNumber-1] = addTime(new Date(),minutes); 
-		bookParkingCoins(parkCoins);
+		bookParkingCoins(parkCoins, coinsParkingMeter);
 
 		// Produce output to customer and transactionLog
 		out = "Parkzeit bis " + formatDate(meterDate[parkingSpotNumber-1]) + " - " + minutes + " Minuten";
